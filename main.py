@@ -1,6 +1,24 @@
 # Задание 1
-def read_cookbook(filename):
-    cookbook = {}
+from typing import List, Dict, TypedDict
+
+
+class DishIngredient(TypedDict):
+    ingredient_name: str
+    quantity: int
+    measure: str
+
+
+class ShoplistIngredient(TypedDict):
+    quantity: int
+    measure: str
+
+
+CookBook = Dict[str, List[DishIngredient]]
+ShopList = Dict[str, ShoplistIngredient]
+
+
+def read_cookbook(filename: str) -> CookBook:
+    result_cookbook = {}
     with open(filename, encoding='UTF-8') as f:
         lines = f.readlines()
         lines = [line.strip() for line in lines]
@@ -8,24 +26,26 @@ def read_cookbook(filename):
         while start < len(lines) and lines[start]:
             dish = lines[start]
             start += 1
-            cookbook[dish] = []
+            result_cookbook[dish] = []
             for _ in range(int(lines[start])):
                 start += 1
                 name, quantity, measure = [word.strip() for word in lines[start].split('|')]
-                cookbook[dish].append({'ingredient_name': name, 'quantity': int(quantity), 'measure': measure})
+                result_cookbook[dish].append({'ingredient_name': name, 'quantity': int(quantity), 'measure': measure})
             start += 2
-    return cookbook
+    return result_cookbook
+
 
 # Задание 2
-def get_shop_list_by_dishes(dishes, person_count):
-    shop_list = {}
+def get_shop_list_by_dishes(dishes: List[str], person_count: int) -> ShopList:
+    shoplist = {}
     for dish in dishes:
-        for dish_inredient in cookbook.get(dish,[]):
-            if dish_inredient['ingredient_name'] in shop_list:
-                shop_list[dish_inredient['ingredient_name']]['quantity'] += person_count*dish_inredient['quantity']
+        for dish_ingredient in cookbook.get(dish, []):
+            if dish_ingredient['ingredient_name'] in shoplist:
+                shoplist[dish_ingredient['ingredient_name']]['quantity'] += person_count * dish_ingredient['quantity']
             else:
-                shop_list[dish_inredient['ingredient_name']] = {'measure': dish_inredient['measure'], 'quantity': dish_inredient['quantity']*person_count}
-    return shop_list
+                shoplist[dish_ingredient['ingredient_name']] = {'measure': dish_ingredient['measure'],
+                                                                'quantity': dish_ingredient['quantity'] * person_count}
+    return shoplist
 
 
 if __name__ == '__main__':
